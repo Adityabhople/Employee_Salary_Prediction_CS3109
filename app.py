@@ -10,17 +10,71 @@ st.set_page_config(page_title="Employee Salary Estimator", page_icon="💼", lay
 st.markdown(
     """
 <style>
-.block-container {padding-top: 1.6rem; max-width: 1200px;}
+/* ===== Page background: deep navy with soft colour glows and a faint grid ===== */
+.stApp {
+  background:
+    linear-gradient(rgba(255,255,255,.028) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,.028) 1px, transparent 1px),
+    radial-gradient(1100px 600px at 8% -8%, rgba(99,102,241,.30), transparent 60%),
+    radial-gradient(900px 520px at 100% 0%, rgba(236,72,153,.20), transparent 55%),
+    radial-gradient(1000px 600px at 55% 115%, rgba(16,185,129,.13), transparent 60%),
+    #0b1020;
+  background-size: 46px 46px, 46px 46px, auto, auto, auto, auto;
+  background-attachment: fixed;
+}
+header[data-testid="stHeader"] {background: transparent;}
 footer {visibility: hidden;}
+.block-container {padding-top: 3.2rem; max-width: 1200px;}
+
+/* ===== Sidebar ===== */
+[data-testid="stSidebar"] {
+  background: linear-gradient(180deg, rgba(24,28,58,.97) 0%, rgba(13,17,36,.98) 100%);
+  border-right: 1px solid rgba(129,140,248,.28);
+  box-shadow: 6px 0 30px rgba(0,0,0,.35);
+}
+[data-testid="stSidebar"] > div:first-child {background: transparent;}
+[data-testid="stSidebar"] .block-container {padding-top: 1rem;}
+[data-testid="stSidebar"] label p {font-size: .86rem; font-weight: 600; letter-spacing: .01em;}
+[data-testid="stSidebar"] div[data-baseweb="select"] > div {
+  background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.14); border-radius: 12px;
+}
+[data-testid="stSidebar"] div[data-baseweb="select"] > div:hover {border-color: rgba(139,92,246,.7);}
+[data-testid="stSidebar"] [data-testid="stVerticalBlockBorderWrapper"] {
+  background: rgba(255,255,255,.035); border: 1px solid rgba(255,255,255,.10);
+  border-radius: 16px; padding: 4px 6px;
+}
+.side-brand {display:flex; align-items:center; gap:14px; padding:16px 16px; margin-bottom:14px;
+  border-radius:18px; background: linear-gradient(135deg, rgba(79,70,229,.45), rgba(219,39,119,.35));
+  border: 1px solid rgba(255,255,255,.18); box-shadow: 0 8px 22px rgba(79,70,229,.30);}
+.side-brand .avatar {width:46px; height:46px; border-radius:14px; display:flex; align-items:center;
+  justify-content:center; font-size:1.5rem; background: rgba(255,255,255,.16);}
+.side-brand .side-title {font-weight:800; font-size:1.12rem; color:#fff; line-height:1.2;}
+.side-brand .side-sub {font-size:.78rem; color: rgba(255,255,255,.78);}
+.side-section {display:flex; align-items:center; gap:8px; font-size:.72rem; font-weight:700;
+  letter-spacing:.14em; text-transform:uppercase; color:#a5b4fc; margin: 4px 0 6px 2px;}
+.side-section .dot {width:8px; height:8px; border-radius:50%; background: linear-gradient(135deg,#6366f1,#ec4899);}
+.side-summary {margin-top:14px; padding:16px; border-radius:18px;
+  background: linear-gradient(160deg, rgba(16,185,129,.18), rgba(99,102,241,.14));
+  border: 1px solid rgba(16,185,129,.35);}
+.side-summary .lbl {font-size:.72rem; text-transform:uppercase; letter-spacing:.14em; color:#6ee7b7; font-weight:700;}
+.side-summary .row {display:flex; justify-content:space-between; align-items:center; padding:7px 0;
+  border-bottom:1px dashed rgba(255,255,255,.14); font-size:.9rem;}
+.side-summary .row:last-child {border-bottom:none;}
+.side-summary .row b {font-size:1.02rem;}
+
+/* ===== Hero ===== */
 .hero {background: linear-gradient(135deg,#4f46e5 0%,#7c3aed 50%,#db2777 100%);
        padding: 28px 34px; border-radius: 22px; color: #fff; margin-bottom: 18px;
-       box-shadow: 0 12px 32px rgba(79,70,229,.35);}
+       box-shadow: 0 14px 36px rgba(79,70,229,.40); border: 1px solid rgba(255,255,255,.18);}
 .hero .title {font-size: 2.3rem; font-weight: 800; line-height: 1.15; color:#fff;}
-.hero .subtitle {margin-top: 8px; font-size: 1.05rem; opacity: .92; color:#fff;}
+.hero .subtitle {margin-top: 8px; font-size: 1.05rem; opacity: .93; color:#fff;}
 .chip {display:inline-block; padding:5px 14px; border-radius:999px; margin:2px 6px 2px 0;
-       background: rgba(99,102,241,.16); border:1px solid rgba(99,102,241,.35); font-size:.85rem;}
-.kpi {border-radius:18px; padding:20px 24px; border:1px solid rgba(128,128,160,.28);
-      background: rgba(128,128,160,.10); height: 100%;}
+       background: rgba(99,102,241,.18); border:1px solid rgba(129,140,248,.40); font-size:.85rem;}
+
+/* ===== KPI cards ===== */
+.kpi {border-radius:18px; padding:20px 24px; border:1px solid rgba(255,255,255,.10);
+      background: linear-gradient(160deg, rgba(255,255,255,.07), rgba(255,255,255,.025));
+      backdrop-filter: blur(6px); height: 100%; box-shadow: 0 8px 24px rgba(0,0,0,.28);}
 .kpi .label {font-size:.8rem; opacity:.75; text-transform:uppercase; letter-spacing:.08em; font-weight:600;}
 .kpi .value {font-size:2.2rem; font-weight:800; margin:6px 0 2px 0; line-height:1.1;}
 .kpi .sub {font-size:.92rem; opacity:.75; margin-bottom:8px;}
@@ -28,9 +82,12 @@ footer {visibility: hidden;}
 .kpi.b {border-top:5px solid #ec4899;}
 .kpi.d {border-top:5px solid #10b981;}
 .badge {display:inline-block; padding:3px 12px; border-radius:999px; font-weight:700; font-size:.85rem;}
-.badge.up {background:rgba(16,185,129,.18); color:#10b981;}
-.badge.down {background:rgba(239,68,68,.18); color:#ef4444;}
-.badge.flat {background:rgba(148,163,184,.22); color:#94a3b8;}
+.badge.up {background:rgba(16,185,129,.18); color:#34d399;}
+.badge.down {background:rgba(239,68,68,.18); color:#f87171;}
+.badge.flat {background:rgba(148,163,184,.22); color:#cbd5e1;}
+
+/* ===== Tabs ===== */
+button[data-baseweb="tab"] {font-weight:600;}
 .footer-note {text-align:center; opacity:.55; font-size:.85rem; margin-top:34px;}
 </style>
 """,
@@ -46,19 +103,40 @@ def get_model():
 bundle = get_model()
 pipe = bundle["pipeline"]
 
+
+def section(title):
+    st.markdown(f'<div class="side-section"><span class="dot"></span>{title}</div>', unsafe_allow_html=True)
+
+
 # ---------------------------------------------------------------- sidebar
 with st.sidebar:
-    st.markdown("## 🧑‍💼 Employee profile")
-    job_role = st.selectbox("💼 Job role", list(ROLES))
-    education = st.selectbox("🎓 Education", list(EDUCATION), index=2)
-    location_tier = st.selectbox("📍 City tier", list(LOCATION))
-    company_size = st.selectbox("🏢 Company size", list(COMPANY), index=1)
-    skills_count = st.slider("🛠️ Relevant skills", 0, 10, 5)
-    certifications = st.slider("📜 Certifications", 0, 5, 1)
+    st.markdown(
+        """
+<div class="side-brand">
+  <div class="avatar">💼</div>
+  <div><div class="side-title">Employee Profile</div>
+  <div class="side-sub">Configure the candidate details</div></div>
+</div>
+""",
+        unsafe_allow_html=True,
+    )
 
-    st.markdown("## ⏱️ Experience comparison")
-    years_a = st.slider("Scenario A: years of experience", 0.0, 30.0, 2.0, 0.5)
-    years_b = st.slider("Scenario B: years of experience", 0.0, 30.0, 7.0, 0.5)
+    with st.container(border=True):
+        section("Job details")
+        job_role = st.selectbox("💼 Job role", list(ROLES))
+        company_size = st.selectbox("🏢 Company size", list(COMPANY), index=1)
+        location_tier = st.selectbox("📍 City tier", list(LOCATION))
+
+    with st.container(border=True):
+        section("Qualifications")
+        education = st.selectbox("🎓 Education", list(EDUCATION), index=2)
+        skills_count = st.slider("🛠️ Relevant skills", 0, 10, 5)
+        certifications = st.slider("📜 Certifications", 0, 5, 1)
+
+    with st.container(border=True):
+        section("Experience comparison")
+        years_a = st.slider("Scenario A · years of experience", 0.0, 30.0, 2.0, 0.5)
+        years_b = st.slider("Scenario B · years of experience", 0.0, 30.0, 7.0, 0.5)
 
 profile = dict(
     job_role=job_role,
@@ -75,6 +153,19 @@ salary_b = predict_salary(pipe, years_experience=years_b, **profile)
 diff = salary_b - salary_a
 pct = (diff / salary_a * 100) if salary_a else 0.0
 
+with st.sidebar:
+    st.markdown(
+        f"""
+<div class="side-summary">
+  <div class="lbl">Live prediction</div>
+  <div class="row"><span>Scenario A · {years_a:g} yrs</span><b>₹ {salary_a:.2f} LPA</b></div>
+  <div class="row"><span>Scenario B · {years_b:g} yrs</span><b>₹ {salary_b:.2f} LPA</b></div>
+  <div class="row"><span>Difference</span><b>{diff:+.2f} LPA</b></div>
+</div>
+""",
+        unsafe_allow_html=True,
+    )
+
 # ---------------------------------------------------------------- hero
 st.markdown(
     """
@@ -87,7 +178,14 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-chips = [job_role, education, location_tier, company_size, f"{skills_count} skills", f"{certifications} certifications"]
+chips = [
+    job_role,
+    education,
+    location_tier,
+    company_size,
+    f"{skills_count} skill{'s' if skills_count != 1 else ''}",
+    f"{certifications} certification{'s' if certifications != 1 else ''}",
+]
 st.markdown("".join(f'<span class="chip">{c}</span>' for c in chips), unsafe_allow_html=True)
 st.write("")
 
@@ -139,7 +237,7 @@ else:
 # ---------------------------------------------------------------- tabs
 tab1, tab2, tab3, tab4 = st.tabs(["📈 Experience curve", "🔍 Role & education", "📋 Comparison log", "ℹ️ About model"])
 
-SCEN_COLORS = alt.Scale(domain=["A", "B"], range=["#6366f1", "#ec4899"])
+SCEN_COLORS = alt.Scale(domain=["A", "B"], range=["#818cf8", "#ec4899"])
 
 # ---- Tab 1: experience curve
 with tab1:
@@ -154,8 +252,8 @@ with tab1:
         x=alt.X("Years:Q", title="Years of experience"),
         y=alt.Y("Salary:Q", title="Predicted salary (LPA)"),
     )
-    area = base.mark_area(interpolate="monotone", opacity=0.22, color="#6366f1")
-    line = base.mark_line(interpolate="monotone", strokeWidth=3, color="#6366f1")
+    area = base.mark_area(interpolate="monotone", opacity=0.25, color="#818cf8")
+    line = base.mark_line(interpolate="monotone", strokeWidth=3, color="#818cf8")
 
     pts = pd.DataFrame(
         {
