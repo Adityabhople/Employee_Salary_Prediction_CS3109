@@ -4,97 +4,93 @@ import streamlit as st
 
 from model import COMPANY, EDUCATION, LOCATION, ROLES, load_model, predict_salary
 
-st.set_page_config(page_title="Employee Salary Estimator", page_icon="🌸", layout="wide")
+st.set_page_config(page_title="Employee Salary Estimator", page_icon="💼", layout="wide")
 
 # ---------------------------------------------------------------- styling
 st.markdown(
     """
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Poppins:wght@400;500;600&display=swap');
-
-/* ===== Page background: soft cream with pastel glows and a dotted texture ===== */
+/* ===== Page background: clean light grey-blue ===== */
 .stApp {
-  font-family: 'Poppins', sans-serif;
   background:
-    radial-gradient(rgba(155,126,222,.16) 1.2px, transparent 1.2px),
-    radial-gradient(700px 480px at 6% -5%, rgba(205,180,246,.55), transparent 62%),
-    radial-gradient(800px 520px at 100% 2%, rgba(255,200,221,.55), transparent 60%),
-    radial-gradient(900px 560px at 60% 112%, rgba(186,236,214,.50), transparent 60%),
-    #fbf7ff;
-  background-size: 26px 26px, auto, auto, auto, auto;
+    radial-gradient(900px 420px at 0% 0%, rgba(165,180,252,.35), transparent 60%),
+    radial-gradient(800px 420px at 100% 0%, rgba(251,207,232,.35), transparent 60%),
+    #f4f6fb;
   background-attachment: fixed;
 }
 header[data-testid="stHeader"] {background: transparent;}
 footer {visibility: hidden;}
 .block-container {padding-top: 3.2rem; max-width: 1200px;}
 
+/* ===== Black text everywhere ===== */
+.stApp, .stApp p, .stApp span, .stApp label, .stApp li, .stApp h1, .stApp h2, .stApp h3,
+.stApp h4, .stApp h5, .stApp h6, .stApp small, .stApp caption,
+[data-testid="stMarkdownContainer"], [data-testid="stWidgetLabel"] p,
+[data-testid="stMetricValue"], [data-testid="stMetricLabel"], [data-testid="stCaptionContainer"],
+[data-testid="stSliderThumbValue"], [data-testid="stTickBarMin"], [data-testid="stTickBarMax"],
+button[data-baseweb="tab"] p, div[data-baseweb="select"] div, div[data-baseweb="select"] span,
+[data-testid="stAlert"] p, [data-testid="stAlert"] span {
+  color: #000000 !important;
+}
+
 /* ===== Sidebar ===== */
 [data-testid="stSidebar"] {
-  background: linear-gradient(180deg, #efe6fb 0%, #fde7ef 60%, #fff1e6 100%);
-  border-right: 1px solid rgba(155,126,222,.28);
-  box-shadow: 6px 0 28px rgba(155,126,222,.14);
+  background: #eceffd;
+  border-right: 2px solid #c7cdf5;
 }
 [data-testid="stSidebar"] > div:first-child {background: transparent;}
 [data-testid="stSidebar"] .block-container {padding-top: 1rem;}
-[data-testid="stSidebar"] label p {font-size: .86rem; font-weight: 500;}
+[data-testid="stSidebar"] label p {font-size: .92rem; font-weight: 600;}
 [data-testid="stSidebar"] div[data-baseweb="select"] > div {
-  background: rgba(255,255,255,.80); border: 1px solid rgba(155,126,222,.32); border-radius: 12px;
+  background: #ffffff; border: 1.5px solid #9aa4e6; border-radius: 10px;
 }
-[data-testid="stSidebar"] div[data-baseweb="select"] > div:hover {border-color: #9b7ede;}
 [data-testid="stSidebar"] [data-testid="stVerticalBlockBorderWrapper"] {
-  background: rgba(255,255,255,.55); border: 1px solid rgba(155,126,222,.22);
-  border-radius: 18px; padding: 4px 6px; box-shadow: 0 6px 18px rgba(155,126,222,.10);
+  background: #ffffff; border: 1.5px solid #c7cdf5; border-radius: 16px; padding: 4px 6px;
 }
-.side-brand {display:flex; align-items:center; gap:14px; padding:16px 16px; margin-bottom:14px;
-  border-radius:20px; background: linear-gradient(135deg, #cdb4f6, #f7b6d2);
-  border: 1px solid rgba(255,255,255,.75); box-shadow: 0 8px 22px rgba(155,126,222,.30);}
-.side-brand .avatar {width:46px; height:46px; border-radius:15px; display:flex; align-items:center;
-  justify-content:center; font-size:1.5rem; background: rgba(255,255,255,.60);}
-.side-brand .side-title {font-family:'Playfair Display', serif; font-weight:700; font-size:1.2rem;
-  color:#3b2f4a; line-height:1.2;}
-.side-brand .side-sub {font-size:.78rem; color:#5b4a78;}
-.side-section {display:flex; align-items:center; gap:8px; font-size:.7rem; font-weight:600;
-  letter-spacing:.14em; text-transform:uppercase; color:#7c5cc4; margin: 4px 0 6px 2px;}
-.side-section .dot {width:8px; height:8px; border-radius:50%; background: linear-gradient(135deg,#9b7ede,#f4a6c0);}
-.side-summary {margin-top:14px; padding:16px; border-radius:20px;
-  background: linear-gradient(160deg, rgba(168,230,207,.55), rgba(205,180,246,.40));
-  border: 1px solid rgba(94,196,160,.45); color:#3b2f4a;}
-.side-summary .lbl {font-size:.7rem; text-transform:uppercase; letter-spacing:.14em; color:#2f9e7a; font-weight:600;}
+.side-brand {display:flex; align-items:center; gap:14px; padding:16px; margin-bottom:14px;
+  border-radius:18px; background: linear-gradient(135deg, #c7d2fe, #fbcfe8);
+  border: 1.5px solid #9aa4e6;}
+.side-brand .avatar {width:46px; height:46px; border-radius:14px; display:flex; align-items:center;
+  justify-content:center; font-size:1.5rem; background: #ffffff;}
+.side-brand .side-title {font-weight:800; font-size:1.15rem; line-height:1.2;}
+.side-brand .side-sub {font-size:.82rem;}
+.side-section {display:flex; align-items:center; gap:8px; font-size:.78rem; font-weight:800;
+  letter-spacing:.12em; text-transform:uppercase; margin: 4px 0 8px 2px;}
+.side-section .dot {width:9px; height:9px; border-radius:50%; background:#4f46e5;}
+.side-summary {margin-top:14px; padding:16px; border-radius:18px; background:#dcfce7;
+  border: 1.5px solid #4ade80;}
+.side-summary .lbl {font-size:.78rem; text-transform:uppercase; letter-spacing:.12em; font-weight:800;}
 .side-summary .row {display:flex; justify-content:space-between; align-items:center; padding:7px 0;
-  border-bottom:1px dashed rgba(124,92,196,.30); font-size:.88rem;}
+  border-bottom:1px dashed #4b5563; font-size:.92rem;}
 .side-summary .row:last-child {border-bottom:none;}
-.side-summary .row b {font-size:1rem;}
+.side-summary .row b {font-size:1.02rem;}
 
 /* ===== Hero ===== */
-.hero {background: linear-gradient(135deg,#cdb4f6 0%,#f7b6d2 55%,#ffd8b5 100%);
-       padding: 30px 36px; border-radius: 26px; color: #3b2f4a; margin-bottom: 18px;
-       box-shadow: 0 14px 34px rgba(155,126,222,.30); border: 1px solid rgba(255,255,255,.80);}
-.hero .title {font-family:'Playfair Display', serif; font-size: 2.4rem; font-weight: 700;
-       line-height: 1.15; color:#3b2f4a;}
-.hero .subtitle {margin-top: 8px; font-size: 1rem; color:#4b3b63;}
+.hero {background: linear-gradient(135deg,#c7d2fe 0%,#fbcfe8 60%,#fde68a 100%);
+       padding: 28px 34px; border-radius: 22px; margin-bottom: 18px;
+       border: 1.5px solid #9aa4e6; box-shadow: 0 8px 22px rgba(79,70,229,.15);}
+.hero .title {font-size: 2.3rem; font-weight: 800; line-height: 1.15;}
+.hero .subtitle {margin-top: 8px; font-size: 1.05rem; font-weight: 500;}
 .chip {display:inline-block; padding:5px 14px; border-radius:999px; margin:2px 6px 2px 0;
-       background: rgba(255,255,255,.75); border:1px solid rgba(155,126,222,.35);
-       font-size:.83rem; color:#5b4a78;}
+       background:#ffffff; border:1.5px solid #9aa4e6; font-size:.86rem; font-weight:500;}
 
 /* ===== KPI cards ===== */
-.kpi {border-radius:22px; padding:20px 24px; border:1px solid rgba(155,126,222,.20);
-      background: rgba(255,255,255,.78); height: 100%;
-      box-shadow: 0 10px 26px rgba(155,126,222,.16);}
-.kpi .label {font-size:.76rem; opacity:.75; text-transform:uppercase; letter-spacing:.09em; font-weight:600;}
-.kpi .value {font-family:'Playfair Display', serif; font-size:2.25rem; font-weight:700;
-      margin:6px 0 2px 0; line-height:1.1;}
-.kpi .sub {font-size:.9rem; opacity:.75; margin-bottom:8px;}
-.kpi.a {border-top:5px solid #9b7ede;}
-.kpi.b {border-top:5px solid #f4a09a;}
-.kpi.d {border-top:5px solid #5ec4a0;}
-.badge {display:inline-block; padding:3px 12px; border-radius:999px; font-weight:600; font-size:.84rem;}
-.badge.up {background:rgba(94,196,160,.22); color:#1f8a66;}
-.badge.down {background:rgba(240,120,120,.22); color:#c0392b;}
-.badge.flat {background:rgba(150,140,170,.22); color:#6b5f80;}
+.kpi {border-radius:18px; padding:20px 24px; border:1.5px solid #c7cdf5; background:#ffffff;
+      height:100%; box-shadow: 0 6px 18px rgba(79,70,229,.10);}
+.kpi .label {font-size:.82rem; text-transform:uppercase; letter-spacing:.08em; font-weight:700;}
+.kpi .value {font-size:2.2rem; font-weight:800; margin:6px 0 2px 0; line-height:1.1;}
+.kpi .sub {font-size:.95rem; margin-bottom:8px;}
+.kpi.a {border-top:6px solid #4f46e5;}
+.kpi.b {border-top:6px solid #ec4899;}
+.kpi.d {border-top:6px solid #16a34a;}
+.badge {display:inline-block; padding:3px 12px; border-radius:999px; font-weight:700; font-size:.88rem;}
+.badge.up {background:#bbf7d0;}
+.badge.down {background:#fecaca;}
+.badge.flat {background:#e5e7eb;}
 
 /* ===== Tabs ===== */
-button[data-baseweb="tab"] {font-weight:500;}
-.footer-note {text-align:center; opacity:.6; font-size:.85rem; margin-top:34px;}
+button[data-baseweb="tab"] {font-weight:600;}
+.footer-note {text-align:center; font-size:.85rem; margin-top:34px;}
 </style>
 """,
     unsafe_allow_html=True,
@@ -114,12 +110,22 @@ def section(title):
     st.markdown(f'<div class="side-section"><span class="dot"></span>{title}</div>', unsafe_allow_html=True)
 
 
+def style_chart(ch):
+    """Black axis/legend/title text so charts stay readable."""
+    return (
+        ch.configure_axis(labelColor="#000000", titleColor="#000000", gridColor="#d9dcec", domainColor="#555555")
+        .configure_legend(labelColor="#000000", titleColor="#000000")
+        .configure_title(color="#000000")
+        .configure_view(strokeWidth=0)
+    )
+
+
 # ---------------------------------------------------------------- sidebar
 with st.sidebar:
     st.markdown(
         """
 <div class="side-brand">
-  <div class="avatar">🌸</div>
+  <div class="avatar">💼</div>
   <div><div class="side-title">Employee Profile</div>
   <div class="side-sub">Configure the candidate details</div></div>
 </div>
@@ -176,7 +182,7 @@ with st.sidebar:
 st.markdown(
     """
 <div class="hero">
-  <div class="title">🌸 Employee Salary Estimator</div>
+  <div class="title">💼 Employee Salary Estimator</div>
   <div class="subtitle">Predict annual salary (LPA = lakhs per annum) from experience, education and job
   features, then change the years of experience to compare scenarios.</div>
 </div>
@@ -243,7 +249,7 @@ else:
 # ---------------------------------------------------------------- tabs
 tab1, tab2, tab3, tab4 = st.tabs(["📈 Experience curve", "🔍 Role & education", "📋 Comparison log", "ℹ️ About model"])
 
-SCEN_COLORS = alt.Scale(domain=["A", "B"], range=["#8b6fd6", "#f08a7e"])
+SCEN_COLORS = alt.Scale(domain=["A", "B"], range=["#4f46e5", "#ec4899"])
 
 # ---- Tab 1: experience curve
 with tab1:
@@ -258,8 +264,8 @@ with tab1:
         x=alt.X("Years:Q", title="Years of experience"),
         y=alt.Y("Salary:Q", title="Predicted salary (LPA)"),
     )
-    area = base.mark_area(interpolate="monotone", opacity=0.28, color="#b8a2ea")
-    line = base.mark_line(interpolate="monotone", strokeWidth=3, color="#8b6fd6")
+    area = base.mark_area(interpolate="monotone", opacity=0.25, color="#818cf8")
+    line = base.mark_line(interpolate="monotone", strokeWidth=3, color="#4f46e5")
 
     pts = pd.DataFrame(
         {
@@ -275,11 +281,15 @@ with tab1:
         color=alt.Color("Scenario:N", scale=SCEN_COLORS, legend=alt.Legend(title=None, orient="top")),
         tooltip=["Scenario", "Years", alt.Tooltip("Salary:Q", format=".2f")],
     )
-    rules = marks.mark_rule(strokeDash=[5, 5], opacity=0.6)
+    rules = marks.mark_rule(strokeDash=[5, 5], opacity=0.7)
     dots = marks.mark_point(size=260, filled=True, opacity=1)
-    labels = marks.encode(text="Label:N").mark_text(dy=-20, fontWeight="bold", fontSize=13)
+    labels = (
+        alt.Chart(pts)
+        .encode(x="Years:Q", y="Salary:Q", text="Label:N")
+        .mark_text(dy=-20, fontWeight="bold", fontSize=14, color="#000000")
+    )
 
-    st.altair_chart((area + line + rules + dots + labels).properties(height=400))
+    st.altair_chart(style_chart((area + line + rules + dots + labels).properties(height=400)))
 
     st.markdown("##### Salary milestones for this profile")
     milestones = [0, 1, 2, 3, 5, 8, 10, 15, 20, 25, 30]
@@ -312,9 +322,9 @@ with tab2:
 
     def grouped_bar(df, title):
         order = list(df[df["Scenario"] == "B"].sort_values("Salary", ascending=False)["Option"])
-        return (
+        chart = (
             alt.Chart(df)
-            .mark_bar(cornerRadiusTopLeft=6, cornerRadiusTopRight=6)
+            .mark_bar(cornerRadiusTopLeft=5, cornerRadiusTopRight=5)
             .encode(
                 x=alt.X("Option:N", sort=order, title=None, axis=alt.Axis(labelAngle=-35)),
                 xOffset="Scenario:N",
@@ -324,6 +334,7 @@ with tab2:
             )
             .properties(height=360, title=title)
         )
+        return style_chart(chart)
 
     with left:
         st.altair_chart(grouped_bar(compare_df(list(ROLES), "job_role"), "Same profile, different job role"))
